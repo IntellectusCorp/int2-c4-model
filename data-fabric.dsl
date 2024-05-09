@@ -1,7 +1,7 @@
-dataFabric = softwaresystem "Int2 Data Fabric Platform" "Autonomous Bigdata Platform has been powerd by Intellectu's Data Fabric Platform which contains the data virtualizations to manage data and the semantic search to discover and the data pipelines to make automated workflows." "Int2 Data Fabric" {
+dataFabric = softwaresystem "Int2 Fabric" "Autonomous Bigdata Platform has been powerd by Intellectu's Data Fabric Platform which contains the data virtualizations to manage data and the semantic search to discover and the data pipelines to make automated workflows." "Int2 Data Fabric" {
 
  properties {
-     "Owner" "Intellectus"
+     "Owner" "intellectus.software"
  }   
  group "Client-side" {
      jotter = container "Web Application" "Serverless nextjs" {
@@ -9,7 +9,7 @@ dataFabric = softwaresystem "Int2 Data Fabric Platform" "Autonomous Bigdata Plat
      }
   }
   group "Backend Services" {
-     group "API Gateway Service" {
+     group "API Service" {
          fabricApiProvider = container "API Service" "API Gateway Managed Service"
      }
      group "Knowledge Service" {
@@ -40,16 +40,30 @@ dataFabric = softwaresystem "Int2 Data Fabric Platform" "Autonomous Bigdata Plat
          }
      }
      
-     group "Data Pipeline Service" {
-         streamPipelineBackend = container "Stream Pipeline Backend" "Subscribe data to store" "Container: Zenoh Backend S3"
-         streamPipelineRouter = container "Stream Pipeline Router" "Router" "Container: Zenoh Router"
-         streamPipelineStorage = container "Stream Pipeline Storage" "Raw data storage" "AWS S3" {
+     group "DataPipelineService" {
+         streamApi = container "Stream API" "Subscribe data to store" "Container: Zenoh Backend S3"
+         streamRouter = container "Stream Router" "Router" "Container: Zenoh Router"
+         streamObjectStorage = container "Stream Object Storage" "Raw data storage" "AWS S3" {
              tags "Database"
          }
-         streamPipelineBackend -> streamPipelineRouter "subscribe data to store" 
-         streamPipelineBackend -> streamPipelineStorage
+         streamDatabase = container "Stream Database" "Database" "InfluxDB(Amazon Timestream)" {
+             tags "Database"
+         }
+         streamClient = container "Stream Client to pub/sub" "Database" "InfluxDB(Amazon Timestream)" {
+             tags "DataPipelineService"
+         }
+
+         streamApi -> streamRouter "subscribe data to store" 
+         streamApi -> streamObjectStorage
+         streamClient -> streamDatabase
+
+         streamClient -> streamRouter
          
         fabricBroker = container "Data Source Gateway" "Manage data pipeline between distburited data source and Data Fabric in secure." "Container: Java Application"
     }
+
+    # relationships between API Service <> DataPipelineService
+    streamApi -> fabricApiProvider
+
   }
 }
