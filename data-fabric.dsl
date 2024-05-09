@@ -49,7 +49,7 @@ dataFabric = softwaresystem "Int2 Fabric" "Autonomous Bigdata Platform has been 
          streamDatabase = container "Stream Database" "Database" "InfluxDB(Amazon Timestream)" {
              tags "Database"
          }
-         streamClient = container "Stream Client to pub/sub" "Database" "InfluxDB(Amazon Timestream)" {
+         streamClient = container "Stream Client to pub/sub" "Message Broker" "Zenoh Router mode" {
              tags "DataPipelineService"
          }
 
